@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class TestForSort {
     @Test
-    public void test(){
+    public void testForInsertionSort(){
         Random random = new Random();
         int size;
         while((size=random.nextInt(1000))<=0){}
