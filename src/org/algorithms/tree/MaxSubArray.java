@@ -6,6 +6,50 @@ public class MaxSubArray {
     public int maxSubArray(int[] nums){
         return advancedMaxSubArray(nums,0,nums.length-1);
     }
+    //动态规划
+    public int dpSubArray(int[] nums){
+        int size = nums.length;
+        int[] dp = new int[size];
+        dp[0] = nums[0];
+        for(int i=1;i<size;i++){
+            dp[i] = Math.max(dp[i-1] + nums[i],nums[i]);
+        }
+        int max = Integer.MIN_VALUE;
+        for(int i=0;i<size;i++){
+            if(dp[i]>max)
+                max = dp[i];
+        }
+        return max;
+    }
+    public int sumAllSubArray(int[] nums){
+        int size = nums.length;
+        int[][] work = new int[size][size];
+        for(int i=0;i<size;i++){
+            work[i][i] = nums[i];
+        }
+        for(int k=2;k<=size;k++){
+            for(int i=0;i<=size-k;i++){
+                    work[i][i+k-1] = work[i][i+k-2] + nums[i+k-1];
+            }
+        }
+        int max = Integer.MIN_VALUE;
+        for(int i=0;i<size;i++){
+            for(int j=i;j<size;j++){
+                if(work[i][j]>max){
+                    max = work[i][j];
+                }
+            }
+        }
+        for(int i=0;i<size;i++){
+            for(int j=0;j<size;j++){
+                System.out.print(work[i][j] + ",");
+            }
+            System.out.println();
+        }
+        return max;
+    }
+
+    //分治法
     public int advancedMaxSubArray(int[] nums,int begin,int end){
         if(begin==end)
             return nums[begin];
@@ -41,6 +85,6 @@ public class MaxSubArray {
 
     @Test
     public void test(){
-        System.out.println(maxSubArray(new int[]{-2,1,-3,4,-1,2,1,-5,4}));
+        System.out.println(dpSubArray(new int[]{5,4,-1,7,8}));
     }
 }
