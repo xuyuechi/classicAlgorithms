@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class MajorityElement {
     public int majorityElement(int[] nums) {
@@ -47,10 +48,5 @@ public class MajorityElement {
                 count++;
         }
         return count;
-    }
-    @Test
-    public void testForMajorityElement(){
-        System.out.println(majorityElement(new int[]{3,2,3}));
-        System.out.println(advancedGetMajority(new int[]{3,2,3},0,2));
     }
 }

@@ -9,6 +9,31 @@ import java.util.List;
 
 public class ForcePackage {
 
+    //dpPackage 动态规划背包
+    public static void main(String[] args){
+        int count = 4;
+        int capacity = 10;
+        int[] weights = new int[]{7,3,4,5};
+        int[] values = new int[]{42,12,40,25};
+        int[][] dp = new int[5][11];
+        for(int j=0;j<11;j++){
+            dp[0][j] = 0;
+        }
+        for(int i=0;i<5;i++){
+            dp[i][0] = 0;
+        }
+        for(int i=1;i<5;i++){
+            for(int j=1;j<11;j++){
+                if(weights[i-1]<=j){
+                    dp[i][j] = Math.max(dp[i-1][j],dp[i-1][j-weights[i-1]]+values[i-1]);
+                }else{
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+        System.out.println(dp[4][10]);
+    }
+
     public static void forcePackage(int[] value,int[] weight,int limit) throws IOException, ClassNotFoundException {
         LinkedList<LinkedList<Integer>> choice = BRGC(weight.length);
         int maxValue = -1;

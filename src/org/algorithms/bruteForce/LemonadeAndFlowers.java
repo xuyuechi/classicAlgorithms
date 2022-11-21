@@ -3,8 +3,35 @@ package org.algorithms.bruteForce;
 import org.junit.Test;
 
 import java.util.LinkedList;
+import java.util.Scanner;
 
 public class LemonadeAndFlowers {
+    //百钱买百鸡
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        int money = scan.nextInt();
+        int num = scan.nextInt();
+        scan.close();
+        int maxCock = money/5;
+        int maxHen = money/3;
+        int maxChick = 3*money;
+        boolean flag = false;
+        for(int i=0;i<=maxCock;i++){
+            for(int j=0;j<=maxHen;j++){
+                for(int k=0;k<maxChick;k+=3){
+                    if(k/3+3*j+5*i == money && i+j+k==num){
+                        System.out.println(i+" "+j+" "+k);
+                        flag = true;
+                    }
+
+                }
+            }
+        }
+        if(!flag)
+            System.out.println(0);
+    }
+
+
     //leetcode 860
     public boolean lemonadeChange(int[] bills){
         LinkedList<Integer> mine = new LinkedList<>();
