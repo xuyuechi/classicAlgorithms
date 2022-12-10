@@ -3,28 +3,32 @@ package org.algorithms.tree;
 import java.util.*;
 
 public class Main {
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int count = scanner.nextInt();
-        int[] data = new int[count];
-        for(int i=0;i<count;i++){
-            data[i] = scanner.nextInt();
-        }
-        scanner.close();
-        System.out.println(dpSubArray(data));
+
+//        String[] s = scanner.nextLine().split(" ");
+//        int[] data = new int[s.length];
+//        for(int i=0;i<s.length;i++){
+//            data[i] = Integer.parseInt(s[i]);
+//        }
+        int j1 = scanner.nextInt();
+        int j2 = scanner.nextInt();
+        int t = scanner.nextInt();
+        System.out.println(canMeasureWater(j1,j2,t));
     }
-    public static int dpSubArray(int[] nums){
-        int size = nums.length;
-        int[] dp = new int[size];
-        dp[0] = nums[0];
-        for(int i=1;i<size;i++){
-            dp[i] = Math.max(dp[i-1] + nums[i],nums[i]);
-        }
-        int max = Integer.MIN_VALUE;
-        for(int i=0;i<size;i++){
-            if(dp[i]>max)
-                max = dp[i];
-        }
-        return max;
+    public static boolean canMeasureWater(int jug1Capacity, int jug2Capacity, int targetCapacity) {
+        int num = gcd(jug1Capacity,jug2Capacity);
+        if(targetCapacity%num==0 && targetCapacity<=jug1Capacity+jug2Capacity)
+            return true;
+        else
+            return false;
+    }
+    public static int gcd(int a,int b){
+        if(b==0)
+            return a;
+        else
+            return gcd(b,a%b);
     }
 }
+

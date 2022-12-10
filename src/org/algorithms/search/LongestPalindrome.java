@@ -8,6 +8,37 @@ import java.util.List;
 
 public class LongestPalindrome {
 
+    //leetcode 131
+//    public List<List<String>> partition(String s){
+//
+//    }
+
+    //leetcode 714 动态规划
+    public int maxProfitWithFee(int[] prices,int fee){
+        int size = prices.length;
+        int[][] dp = new int[size][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for(int i=1;i<size;i++){
+            dp[i][0] = Math.max(dp[i-1][0],dp[i-1][1]+prices[i]-fee);
+            dp[i][1] = Math.max(dp[i-1][1],dp[i-1][0]-prices[i]);
+        }
+        for(int i=0;i<size;i++){
+            System.out.print(dp[i][0]+",");
+        }
+        System.out.println();
+        for(int i=0;i<size;i++){
+            System.out.print(dp[i][1]+",");
+        }
+        System.out.println();
+        return dp[size-1][0];
+    }
+
+    @Test
+    public void testForMaxProfitWithFee(){
+        System.out.println(maxProfitWithFee(new int[]{1,3,2,8,4,9},2));
+    }
+
     //leetcode 118 杨辉三角
     public List<List<Integer>> generate(int numRows){
         List<List<Integer>> ans = new LinkedList<>();
@@ -35,6 +66,21 @@ public class LongestPalindrome {
         for(List<Integer> i:generate){
             System.out.println(i);
         }
+    }
+
+    //leetcode 122 贪心
+    public int maxProfit2(int[] prices){
+        int size = prices.length;
+        int totalProfit = 0;
+        for(int i=1;i<size;i++){
+            if(prices[i-1]<prices[i])
+                totalProfit += prices[i]-prices[i-1];
+        }
+        return totalProfit;
+    }
+    @Test
+    public void testForMaxProfit2(){
+        System.out.println(maxProfit2(new int[]{7,1,5,3,6,4}));
     }
 
     //leetcode 121
@@ -82,6 +128,7 @@ public class LongestPalindrome {
         System.out.println(Integer.MAX_VALUE);
     }
 
+    //leetcode 5
     public String longestPalindrome(String s){
         int len = s.length();
         int[][] work = new int[len][len];

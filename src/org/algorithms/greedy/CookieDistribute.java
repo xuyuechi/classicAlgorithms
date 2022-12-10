@@ -1,10 +1,141 @@
 package org.algorithms.greedy;
 
+import org.algorithms.tree.TreeNode;
 import org.junit.Test;
 
 import java.util.*;
 
 public class CookieDistribute {
+
+    //leetcode 409
+    public int longestPalindrome(String s){
+        HashMap<Character,Integer> map = new HashMap<>();
+        for(int i=0;i<s.length();i++){
+            if(map.containsKey(s.charAt(i))){
+                int value = map.get(s.charAt(i));
+                map.put(s.charAt(i),++value);
+            }else {
+                map.put(s.charAt(i),1);
+            }
+        }
+        Set<Map.Entry<Character, Integer>> entries = map.entrySet();
+        int count = 0;
+        int biggestEven = 0;
+        for(Map.Entry<Character,Integer> entry:entries){
+            int value = entry.getValue();
+            if(value%2==0)
+                count+=value;
+            else {
+                if(biggestEven<value){
+                    biggestEven = value;
+                }
+            }
+        }
+        boolean flag = true;
+        for(Map.Entry<Character,Integer> entry:entries){
+            int value = entry.getValue();
+            if(value%2!=0){
+                if(value==biggestEven&&flag){
+                    count+=value;
+                    flag = false;
+                }
+                else
+                    count+=(value-1);
+            }
+        }
+        return count;
+    }
+
+    //leetcode 1827
+    public int minOperations(int[] nums){
+        int ops = 0;
+        for(int i=1;i<nums.length;i++){
+            if(nums[i]>nums[i-1])
+                continue;
+            ops+=nums[i-1]-nums[i]+1;
+            nums[i] = nums[i-1] + 1;
+        }
+        return ops;
+    }
+
+    @Test
+    public void testForRob3(){
+        TreeNode single = new TreeNode(5,null,null);
+        System.out.println(rob3(single));
+    }
+
+    //leetcode 337
+    public int rob3(TreeNode root){
+        HashMap<TreeNode,Integer> work = new HashMap<>();
+        postOrder(root,work);
+        return Math.max(root.val,work.get(root));
+    }
+
+    public void postOrder(TreeNode root,HashMap<TreeNode,Integer> map){
+        if(root == null)
+            return;
+        else{
+            postOrder(root.left,map);
+            postOrder(root.right,map);
+            if(root.left == null && root.right == null){
+                map.put(root,0);
+            }
+            else if(root.left == null){
+                root.val = Math.max(root.val +map.get(root.right),root.right.val);
+                map.put(root,root.right.val);
+            }
+            else if(root.right == null){
+                root.val = Math.max(root.val +map.get(root.left),root.left.val);
+                map.put(root,root.left.val);
+
+            }else{
+                root.val = Math.max(root.val +map.get(root.right)+ map.get(root.left),root.left.val+root.right.val);
+                map.put(root,root.left.val+root.right.val);
+            }
+        }
+    }
+
+    //leetcode 213
+    public int rob2(int[] nums){
+        int size = nums.length;
+        if(size==1)
+            return nums[0];
+        if(size==2)
+            return Math.max(nums[0],nums[1]);
+        if(size==3)
+            return Math.max(Math.max(nums[0],nums[1]),nums[2]);
+        int[] dp = new int[size];
+        dp[0] = nums[0];
+        dp[1] = dp[0];
+        for(int i=2;i<size-1;i++){
+            dp[i] = Math.max(dp[i-1],nums[i]+dp[i-2]);
+        }
+        dp[size-1] = dp[size-2];
+        int beginWith0 = dp[size-1];
+        Arrays.fill(dp,0);
+        dp[size-1] = nums[size-1];
+        dp[0] = nums[size-1];
+        for(int i=1;i<size-2;i++){
+            dp[i] = Math.max(dp[i-1],nums[i]+dp[(i-2+size)%size]);
+        }
+        dp[size-2] = dp[size-3];
+        dp[size-1] = dp[size-2];
+        int beginWithEnd = dp[size-1];
+        Arrays.fill(dp,0);
+        dp[1] = nums[1];
+        dp[2] = Math.max(dp[1],nums[2]);
+        for(int i=3;i<size;i++){
+            dp[i] = Math.max(dp[i-1],nums[i]+dp[i-2]);
+        }
+        int beginWithNothing = dp[size-1];
+        return Math.max(Math.max(beginWith0,beginWithEnd),beginWithNothing);
+    }
+
+    @Test
+    public void testForRob2(){
+        System.out.println(rob2(new int[]{2,7,7,7,4}));
+    }
+
     //leetcode 365
     public int gcd(int a,int b){
         if(b==0)
