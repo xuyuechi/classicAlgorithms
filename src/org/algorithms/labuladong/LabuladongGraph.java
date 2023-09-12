@@ -7,6 +7,61 @@ import java.util.*;
 //仗剑篇 2.3 图论
 public class LabuladongGraph {
 
+    //leetcode 1584
+    public int minCostConnectPointsUsingPrim(int[][] points) {
+        List<int[]>[] graph = buildGraph(points);
+        return prim(graph);
+    }
+
+    public int prim(List<int[]>[] graph){
+        int len = graph.length;
+        PriorityQueue<int[]> edges = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] ints, int[] t1) {
+                return ints[2] - t1[2];
+            }
+        });
+        int min = 0;
+        boolean[] inMST = new boolean[len];
+        inMST[0] = true;
+        cut(graph,edges,0,inMST);
+        while(!edges.isEmpty()){
+            int[] poll = edges.poll();
+            if(inMST[poll[1]])
+                continue;
+            min += poll[2];
+            inMST[poll[1]] = true;
+            cut(graph,edges,poll[1],inMST);
+        }
+        return min;
+    }
+
+    public void cut(List<int[]>[] graph,PriorityQueue<int[]> edges,int point,boolean[] inMST){
+        List<int[]> edge = graph[point];
+        for(int[] e:edge){
+            if(inMST[e[1]])
+                continue;
+            edges.add(e);
+        }
+
+    }
+
+    public List<int[]>[] buildGraph(int[][] points){
+        LinkedList<int[]>[] graph = new LinkedList[points.length];
+        for(int i=0;i<points.length;i++){
+            graph[i] = new LinkedList<>();
+        }
+        for(int i=0;i<points.length-1;i++){
+            for(int j=i+1;j<points.length;j++){
+                int[] pA = points[i];
+                int[] pB = points[j];
+                graph[i].add(new int[]{i,j,Math.abs(pA[0]-pB[0])+Math.abs(pA[1]-pB[1])});
+                graph[j].add(new int[]{j,i,Math.abs(pA[0]-pB[0])+Math.abs(pA[1]-pB[1])});
+            }
+        }
+        return graph;
+    }
+
     class ProbState{
         int id;
         double prob;

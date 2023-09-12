@@ -9,6 +9,94 @@ import java.util.*;
 //学剑篇 1.1数组/链表
 public class ArrayAndLinkedList {
 
+    @Test
+    public void test88(){
+        merge(new int[]{4,0,0,0,0,0},1,new int[]{1,2,3,5,6},5);
+    }
+
+    //leetcode 23
+    public ListNode mergeKLists2(ListNode[] lists){
+        if(lists.length == 0)
+            return null;
+        PriorityQueue<ListNode> queue = new PriorityQueue<>(new Comparator<ListNode>() {
+            @Override
+            public int compare(ListNode listNode, ListNode t1) {
+                return listNode.val - t1.val;
+            }
+        });
+        for(ListNode list:lists){
+            ListNode p = list;
+            while(p!=null) {
+                queue.add(p);
+                p = p.next;
+            }
+        }
+        ListNode dummy = new ListNode(-1);
+        ListNode q = dummy;
+        while(!queue.isEmpty()){
+            q.next = queue.poll();
+            q = q.next;
+        }
+        return dummy.next;
+    }
+
+    //leetcode 88 *
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int p1 = 0;
+        int p2 = 0;
+        int end = m;
+        while(p1<end && p2<n){
+            if(nums2[p2]<=nums1[p1]){
+                move(p1,end,nums1);
+                nums1[p1] = nums2[p2];
+                p2++;
+                end++;
+            }
+            else{
+                p1++;
+            }
+        }
+        if(p1 == end && p2<n){
+            for(int i=p2;i<n;i++){
+                nums1[end] = nums2[i];
+                end++;
+            }
+        }
+    }
+
+    public void move(int i,int end,int[] nums1){
+        while(end>i){
+            nums1[end] = nums1[end-1];
+            end--;
+        }
+    }
+
+    //leetcode 25
+    public ListNode reverseKGroup(ListNode head,int k){
+        ListNode a = head;
+        ListNode b = head;
+        for(int i=0;i<k;i++){
+            if(b==null)
+                return head;
+            b = b.next;
+        }
+        ListNode newHead = reverseBetween(a,b);
+        a.next = reverseKGroup(b,k);
+        return newHead;
+    }
+    public ListNode reverseBetween(ListNode a,ListNode b){
+        ListNode pre = null;
+        ListNode cur = a;
+        ListNode nxt;
+        while(cur!=b){
+            nxt = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = nxt;
+        }
+        return pre;
+    }
+
     public ListNode successor = null;
     public ListNode reverseN(ListNode head,int n){
         if(n == 1){

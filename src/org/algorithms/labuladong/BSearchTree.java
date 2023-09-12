@@ -11,6 +11,39 @@ import java.util.stream.Collectors;
 //仗剑篇 2.2二叉搜索树
 public class BSearchTree {
 
+    private int pos = -1;
+    //leetcode 33 *
+    public int search(int[] nums, int target) {
+        int len = nums.length;
+        if(len==0)
+            return -1;
+        if(len==1)
+            return nums[0] == target?0:-1;
+        int end = -1;
+        for(int i=0;i<len-1;i++){
+            if(nums[i]>nums[i+1])
+                end = i;
+        }
+        if(target<nums[0] || end == -1)
+            binarySearch(nums,end+1,len,target);
+        else
+            binarySearch(nums,0,end+1,target);
+        return pos;
+    }
+
+    public void binarySearch(int[] nums,int i,int j,int target){
+        if(i>=j)
+            return;
+        int mid = (i+j)/2;
+        if(target<nums[mid])
+            binarySearch(nums,i,mid,target);
+        else if(target>nums[mid])
+            binarySearch(nums,mid+1,j,target);
+        else{
+            pos = mid;
+        }
+    }
+
     private int maxSum = 0;
 
     //leetcode 1373

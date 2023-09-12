@@ -1,14 +1,50 @@
 package org.algorithms.labuladong;
 
 import org.algorithms.tree.TreeNode;
+import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 //仗剑篇 2.1二叉树
 public class BTree {
+
+    @Test
+    public void testZig(){
+        TreeNode root = new TreeNode(3);
+        root.left = new TreeNode(9);
+        root.right = new TreeNode(20);
+        root.right.left = new TreeNode(15);
+        root.right.right = new TreeNode(7);
+        zigzagLevelOrder(root);
+    }
+
+    //leetcode 103
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        LinkedList<List<Integer>> result = new LinkedList<>();
+        if(root==null)
+            return result;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        boolean leftToRight = true;
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            LinkedList<Integer> temp = new LinkedList<>();
+            for(int i=0;i<size;i++){
+                TreeNode poll = queue.poll();
+                if(leftToRight)
+                    temp.addLast(poll.val);
+                else
+                    temp.addFirst(poll.val);
+                if(poll.left!=null)
+                    queue.offer(poll.left);
+                if(poll.right!=null)
+                    queue.offer(poll.right);
+            }
+            result.add(temp);
+            leftToRight = !leftToRight;
+        }
+        return result;
+    }
 
 //    public List<Integer> countSmaller(int[] nums){
 //
