@@ -4,90 +4,65 @@ import java.util.*;
 
 public class Main {
 
-    public static int max = Integer.MIN_VALUE;
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();
-        int k = scanner.nextInt();
-        int[] arr = new int[n];
-        for(int i=0;i<n;i++){
-            arr[i] = scanner.nextInt();
+        int num = scanner.nextInt();
+        String numStr = num+"";
+        int len = numStr.length();
+        int i = len/2;
+        int j = len/2;
+        if(len%2==0){
+            i--;
         }
-        bring(arr,0,0,new LinkedList<>(),k);
-        System.out.println(max);
-//        if(n==1){
-//            System.out.println(0);
-//            return;
-//        }
-//        int[] arr = new int[n];
-//        for (int i = 0; i < n; i++) {
-//            arr[i] = scanner.nextInt();
-//        }
-//        int maxVolume = Integer.MIN_VALUE;
-//        for(int i=0;i<n-1;i++) {
-//            int p = i;
-//            int q = i+1;
-//            while (p >= 0 && q < n) {
-//                int leftIndex = find(p,arr,true);
-//                int rightIndex = find(q,arr,false);
-//                if(leftIndex!=-1 && rightIndex!=-1){
-//                    p = leftIndex;
-//                    q = rightIndex;
-//                }
-//                else if(leftIndex!=-1){
-//                    p = leftIndex;
-//                }
-//                else if(rightIndex!=-1){
-//                    q = rightIndex;
-//                }
-//                else{
-//                    break;
-//                }
-//            }
-//            System.out.println("p="+p+",q="+q+",arr[p]="+arr[p]+",arr[q]="+arr[q]+",volume:"+Math.min(arr[p],arr[q])*(q-p));
-//            maxVolume = Math.max(Math.min(arr[p],arr[q])*(q-p),maxVolume);
-//        }
-//        System.out.println(maxVolume);
+        int sum = 0;
+        for(int k=0;k<len;k++){
+            sum += Integer.parseInt(numStr.charAt(k)+"");
+        }
+        while(i>=0 && j<=len-1){
+            if(numStr.charAt(i)!=numStr.charAt(j)){
+                System.out.println(-1);
+                return;
+            }
+            i--;
+            j++;
+        }
+        System.out.println(sum);
     }
 
-    public static void bring(int[] stones,int now,int value,LinkedList<Integer> choose,int k){
-        if(value>max){
-            max = value;
+    public static int hoarePartition(int[] arr,int left,int right,int p){
+        int pivot = arr[p];
+        int temp = 0;
+        while(left<right){
+            while(arr[right]>=pivot && left<right)right--;
+            while(arr[left]<=pivot && left<right)left++;
+            temp=arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
         }
-        if(now == stones.length){
-            return;
-        }
-        bring(stones,now+1,value,choose,k);
-
-        choose.addLast(now);
-        if(choose.size()!=0 && choose.size()%3==0){
-            bring(stones,now+1,value+stones[now]+k,choose,k);
-            choose.pollLast();
-        }
-        else{
-            bring(stones,now+1,value+stones[now],choose,k);
-            choose.pollLast();
-        }
+        arr[left] = pivot;
+        return left;
     }
 
-    public static int find(int start, int[] arr, boolean dir) {
-        //向0搜索
-        if (dir) {
-            for (int i = start - 1; i >= 0; i--) {
-                if (arr[i] >= arr[start])
-                    return i;
+    public static boolean transfer(String s,String t){
+        if(t.length()<s.length() || (t.length()==s.length() && !s.equals(t)))
+            return false;
+        int i=0,j=0;
+        while(i<s.length() && j<t.length() && s.charAt(i)==t.charAt(j)){
+            j++;
+            int originalI = i;
+            if(j<t.length() && s.charAt(i)!=t.charAt(j)){
+                i++;
+                while(i<s.length()-1 && s.charAt(i-1)==s.charAt(i))i++;
+                for(int k=j-2;k>=j-(i-originalI);k--){
+                    if(t.charAt(k)!=t.charAt(k+1))
+                        return false;
+                }
             }
-            return -1;
         }
-        //向1搜索
-        else {
-            for (int i = start + 1; i < arr.length; i++) {
-                if (arr[i] >= arr[start])
-                    return i;
-            }
-            return -1;
+        if(j>=t.length()-1 && i>=s.length()-1){
+            return true;
         }
+        return false;
     }
 }
 
