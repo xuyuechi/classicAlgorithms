@@ -6,9 +6,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.ReentrantLock;
 
 //朴剑篇 其他
 public class Others {
@@ -1635,7 +1633,305 @@ public class Others {
         return null;
     }
 
-    public int numberOfWeakCharacters(int[][] properties) {
-        return 2025;
+    //1996 time limit exceeded
+    public int numberOfWeakCharacters2(int[][] properties) {
+        int count = 0;
+        Arrays.sort(properties, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if(o1[0]!=o2[0])
+                    return o1[0] - o2[0];
+                else
+                    return o1[1] - o2[1];
+            }
+        });
+        for(int i=0;i<properties.length-1;i++){
+            for(int j=i+1;j<properties.length;j++){
+                if(properties[i][0] < properties[j][0] && properties[i][1] < properties[j][1]){
+                    count++;
+                    break;
+                }
+            }
+        }
+        return count;
     }
+
+    //1996
+    public int numberOfWeakCharacters(int[][] properties) {
+        int count = 0;
+        Arrays.sort(properties, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if(o1[0]==o2[0])
+                    return o1[1] - o2[1];
+                else
+                    return o2[0] - o1[0];
+            }
+        });
+        int maxOne = 0;
+
+        for(int i=0;i<properties.length;i++){
+            if(properties[i][1] < maxOne){
+                count++;
+            } else {
+                maxOne = properties[i][1];
+            }
+        }
+        return count;
+    }
+
+    @Test
+    public void testNumberOfWeakCharacters(){
+        int[][] properties = {{1,1},{1,2},{2,1},{2,2}};
+        System.out.println(numberOfWeakCharacters(properties));
+    }
+
+    @Test
+    public void testMatrixBlockSum(){
+        int[][] mat = new int[][]{{1,2,3},{4,5,6},{7,8,9}};
+        matrixBlockSum(mat,1);
+    }
+
+    //1314
+    public int[][] matrixBlockSum(int[][] mat, int k) {
+        int[][] presum = buildPreSumMatrix(mat);
+        int[][] answer = new int[mat.length][mat[0].length];
+        for(int i=0;i<mat.length;i++){
+            for(int j=0;j<mat[0].length;j++){
+                int upleftX = Math.max(i - k, 0);
+                int upleftY = Math.max(j - k,0);
+                int downRightX = Math.min(i+k,mat.length-1);
+                int downRightY = Math.min(j+k,mat[0].length-1);
+                answer[i][j] = presum[downRightX+1][downRightY+1] - presum[upleftX][downRightY+1] - presum[downRightX+1][upleftY] + presum[upleftX][upleftY];
+            }
+        }
+        return answer;
+    }
+
+    public int[][] buildPreSumMatrix(int[][] mat){
+        int[][] presum = new int[mat.length+1][mat[0].length+1];
+        for(int i=0;i<presum.length;i++){
+            for(int j=0;j<presum[0].length;j++){
+                if(i == 0 || j == 0){
+                    presum[i][j] = 0;
+                    continue;
+                }
+                presum[i][j] = mat[i-1][j-1] + presum[i][j-1] + presum[i-1][j] - presum[i-1][j-1];
+            }
+        }
+        return presum;
+    }
+
+    @Test
+    public void testMaxSumRangeQuery(){
+        int[][] requests = new int[][]{{1,3},{0,1}};
+        int[] nums = new int[]{1,2,3,4,5};
+        System.out.println(maxSumRangeQuery(nums,requests));
+    }
+
+    //1589
+    public int maxSumRangeQuery(int[] nums, int[][] requests) {
+        int[] timesDif = new int[nums.length];
+        long ans = 0;
+        Arrays.fill(timesDif,0);
+        for(int i=0;i<requests.length;i++){
+            int start = requests[i][0];
+            int end = requests[i][1];
+            timesDif[start] += 1;
+            if(end <= nums.length-2){
+                timesDif[end+1] -= 1;
+            }
+        }
+        int[] times = new int[nums.length];
+        times[0] = timesDif[0];
+        for(int i=1;i<timesDif.length;i++){
+            times[i] = times[i-1] + timesDif[i];
+        }
+        Arrays.sort(nums);
+        Arrays.sort(times);
+        for(int i=0;i<times.length;i++){
+            ans += nums[i] * times[i];
+        }
+        return (int) (ans % 1000000007L);
+    }
+
+    @Test
+    public void testMaxSatisfied(){
+        int[] customers = new int[]{1,0,1,2,1,1,7,5};
+        int[] grumpy = new int[]{0,1,0,1,0,1,0,1};
+        System.out.println(maxSatisfied(customers,grumpy,3));
+    }
+
+    //1052
+    public int maxSatisfied(int[] customers, int[] grumpy, int minutes) {
+        int maxIncrease = 0;
+        int increase = 0;
+        for(int i=0;i<customers.length-minutes+1;i++){
+            for(int j=i;j<i+minutes;j++){
+                if(grumpy[j] == 1){
+                    increase += customers[j];
+                }
+            }
+            maxIncrease = Math.max(maxIncrease,increase);
+            increase = 0;
+        }
+        int total = 0;
+        for(int i=0;i<customers.length;i++){
+            if(grumpy[i] == 1){
+                continue;
+            }
+            total += customers[i];
+        }
+        return total + maxIncrease;
+    }
+
+    @Test
+    public void testIsHappy(){
+        longestConsecutive(new int[]{0,3,7,2,5,8,4,6,0,1});
+    }
+
+    //202
+    public boolean isHappy(int n) {
+        if(n == 1)
+            return true;
+        if(n < 10)
+            return false;
+        if(n % 10 == 0)
+            return true;
+        HashSet<Integer> showed = new HashSet<>();
+        while(true){
+            List<Integer> integers = separateIntoDigits(n);
+            int sum = 0;
+            for(Integer i:integers){
+                sum += i*i;
+            }
+            if(sum == 1){
+                return true;
+            }
+            if(showed.contains(sum)){
+                return false;
+            } else {
+                showed.add(sum);
+                n = sum;
+            }
+        }
+    }
+
+    public List<Integer> separateIntoDigits(int n){
+        List<Integer> digits = new ArrayList<>();
+        while(n != 0){
+            digits.add(n % 10);
+            n /= 10;
+        }
+        return digits;
+    }
+
+    //258
+    public int addDigits(int num) {
+        while(num / 10 != 0){
+            int sum = 0;
+            while(num != 0){
+                sum += num % 10;
+                num /= 10;
+            }
+            if(sum / 10 == 0){
+                return sum;
+            } else {
+                num = sum;
+            }
+        }
+        return num;
+    }
+
+    //203
+    public ListNode removeElements(ListNode head, int val) {
+        if(head.val == val){
+            return removeElements(head.next,val);
+        } else {
+            head.next = removeElements(head.next,val);
+            return head;
+        }
+    }
+
+    //328
+    public ListNode oddEvenList(ListNode head) {
+        if(head == null || head.next == null)
+            return head;
+        ListNode oddHead = new ListNode();
+        ListNode oddPointer = oddHead;
+        ListNode evenHead = new ListNode();
+        evenHead.next = head;
+        ListNode evenPointer = evenHead.next;
+        ListNode p = head.next;
+        boolean flag = true;
+        while(p!=null){
+            if(flag) {
+                oddPointer.next = p;
+                oddPointer = p;
+            } else {
+                evenPointer.next = p;
+                evenPointer = p;
+            }
+            p = p.next;
+            flag = !flag;
+            oddPointer.next = null;
+            evenPointer.next = null;
+        }
+        evenPointer.next = oddHead.next;
+        return evenHead.next;
+    }
+
+    //234
+    /*
+    public boolean isPalindrome(ListNode head) {
+
+    }
+     */
+
+    //128
+    public int longestConsecutive(int[] nums) {
+        if(nums.length == 0){
+            return 0;
+        }
+        if(nums.length == 1){
+            return 1;
+        }
+        Arrays.sort(nums);
+        System.out.println(nums);
+        int maxLen = 1;
+        int len = 1;
+        for(int i=1;i<nums.length;i++){
+            if(nums[i] == nums[i-1]){
+                continue;
+            }
+            if(nums[i] == nums[i-1] + 1){
+                len++;
+            }
+            if(nums[i] > nums[i-1] + 1){
+                maxLen = Math.max(len,maxLen);
+                len = 1;
+            }
+        }
+        maxLen = Math.max(len,maxLen);
+        return maxLen;
+    }
+
+    //136
+    public int singleNumber(int[] nums) {
+        HashMap<Integer,Integer> map = new HashMap<>();
+        for(int i=0;i<nums.length;i++){
+            if(map.containsKey(nums[i])) {
+                map.put(nums[i], map.get(nums[i]) + 1);
+            } else {
+                map.put(nums[i],1);
+            }
+        }
+        for(Map.Entry<Integer,Integer> entry:map.entrySet()){
+            if(entry.getValue() == 1){
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
 }
